@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Goonitup</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='14' width='64' height='64' fill='%23110a0e'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23ff3d6e'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="gate" class="gate">
+    <div class="gate-card">
+      <p class="logo">goonitup</p>
+      <h1>Reddit media slideshow</h1>
+      <p class="gate-copy">
+        Mix Reddit subreddits with e621, Gelbooru, rule34.xxx, and Realbooru tags.
+        Example: <code>futanari, e621:canine, r34:futanari, realbooru:amateur</code>.
+        Double-click <code>start.bat</code> first.
+      </p>
+      <button id="enter" type="button">Enter</button>
+    </div>
+  </div>
+
+  <header id="hud" class="hud">
+    <form id="load-form" class="search" autocomplete="off">
+      <label class="sr-only" for="subs">Subreddits</label>
+      <input id="subs" name="subs" type="text" spellcheck="false"
+        placeholder="futanari, e621:canine, r34:futanari, realbooru:amateur" />
+      <select id="presets" title="Saved presets">
+        <option value="">presets</option>
+      </select>
+      <button id="save-preset" type="button" class="ghost">Save</button>
+      <button id="del-preset" type="button" class="ghost">Del</button>
+      <select id="sort" title="Sort">
+        <option value="hot">hot</option>
+        <option value="new">new</option>
+        <option value="top">top</option>
+        <option value="rising">rising</option>
+      </select>
+      <select id="time" title="Time range for top">
+        <option value="hour">hour</option>
+        <option value="day" selected>day</option>
+        <option value="week">week</option>
+        <option value="month">month</option>
+        <option value="year">year</option>
+        <option value="all">all</option>
+      </select>
+      <select id="cols" title="Layout">
+        <option value="1">1 col</option>
+        <option value="auto">grid</option>
+        <option value="2">2 cols</option>
+        <option value="3">3 cols</option>
+        <option value="4">4 cols</option>
+        <option value="5">5 cols</option>
+        <option value="6">6 cols</option>
+      </select>
+      <button type="submit">Load</button>
+      <button id="api-btn" type="button" class="ghost">API</button>
+    </form>
+    <div class="status" id="status">Ready</div>
+  </header>
+
+  <dialog id="api-modal" class="modal">
+    <form id="api-form" method="dialog">
+      <h2>Reddit API</h2>
+      <p>
+        Anonymous JSON is blocked, so this page uses Reddit RSS by default.
+        Connect a personal app if you want deeper paging, more videos, and NSFW
+        listings your account can see.
+      </p>
+      <ol>
+        <li>Open <a href="https://www.reddit.com/prefs/apps" target="_blank" rel="noopener">reddit.com/prefs/apps</a></li>
+        <li>Create an app. Type can be <strong>script</strong> or <strong>web app</strong>.</li>
+        <li>Redirect URI: <code>http://127.0.0.1:8765/oauth</code></li>
+        <li>Paste the client id (and secret if it has one), then connect.</li>
+      </ol>
+      <p id="api-state" class="api-state">Using RSS</p>
+      <label>Client ID
+        <input id="client-id" type="text" spellcheck="false" autocomplete="off" />
+      </label>
+      <label>Client secret
+        <input id="client-secret" type="password" spellcheck="false" autocomplete="off" />
+      </label>
+      <p>Gelbooru and rule34.xxx need a free account API key.</p>
+      <label>Gelbooru user id
+        <input id="gelbooru-user" type="text" spellcheck="false" autocomplete="off" />
+      </label>
+      <label>Gelbooru API key
+        <input id="gelbooru-key" type="password" spellcheck="false" autocomplete="off" />
+      </label>
+      <label>rule34.xxx user id
+        <input id="r34-user" type="text" spellcheck="false" autocomplete="off" />
+      </label>
+      <label>rule34.xxx API key
+        <input id="r34-key" type="password" spellcheck="false" autocomplete="off" />
+      </label>
+      <div class="row">
+        <button id="save-booru" type="button">Save booru keys</button>
+        <button id="connect" type="button">Connect with Reddit</button>
+        <button id="disconnect" type="button" class="ghost">Disconnect</button>
+        <button id="close-api" type="submit" class="ghost">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <main id="feed" class="feed" tabindex="0" aria-label="Media gallery"></main>
+
+  <div id="empty" class="empty hidden">
+    <p>Load a subreddit to start the gallery.</p>
+  </div>
+
+  <footer class="dock">
+    <button id="prev" type="button" title="Previous (←)">‹</button>
+    <button id="play" type="button" title="Play / pause (Space)">❚❚</button>
+    <button id="next" type="button" title="Next (→)">›</button>
+    <button id="mute" type="button" title="Mute (M)">unmuted</button>
+    <label class="speed">
+      speed
+      <input id="speed" type="number" min="0" step="any" value="8" />
+    </label>
+    <label class="shuffle-wrap">
+      <input id="shuffle" type="checkbox" />
+      shuffle
+    </label>
+    <div id="counter" class="counter">0 / 0</div>
+  </footer>
+
+  <div id="meta" class="meta">
+    <a id="title" href="#" target="_blank" rel="noopener noreferrer"></a>
+    <span id="byline"></span>
+  </div>
+
+  <script src="gallery.js"></script>
+</body>
+</html>
